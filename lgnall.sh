@@ -1,5 +1,7 @@
 #!/bin/ash
 cd $(cd "$(dirname "$0")"; pwd)
+# 自动识别网络所处类型 lgn.bjut.edu.cn bjut_wifi 寝室光猫 ，然后选择shell间隔时间循环登录
+# 请填入以下信息
 id=""
 pw=""
 interface="" # 网卡参数 curl指定网卡用 不指定 也可用
