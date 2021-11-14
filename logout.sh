@@ -1,4 +1,10 @@
 #!/bin/ash
+# 参数  4/6                         interface
+# 解释 ipv4/ipv6用 4或6 不填默认4    网卡名 可不填
+# 下线用 参考使用 lgnout.sh 4
+# 下线用 参考使用 lgnout.sh 6
+# 下线用 参考使用 lgnout.sh 4 eth0
+# 下线用 参考使用 lgnout.sh eth0 6
 cd $(cd "$(dirname "$0")"; pwd)
 errorfile="logout.log"
 fake_header="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Edg/92.0.902.67"
