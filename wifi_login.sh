@@ -1,6 +1,10 @@
 #!/bin/ash
 # 参数     id     pw     interface
 # 参数解释 用户名  密码   网卡名（可选）
+# bjut_wifi登录用 参考使用 wifi_login.sh id pw 
+# bjut_wifi登录用 参考使用 wifi_login.sh id pw interface
+
+ 
 # 也可在此处填写账号 密码 
 cd $(cd "$(dirname "$0")"; pwd)
 id=""
