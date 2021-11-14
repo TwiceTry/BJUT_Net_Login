@@ -8,7 +8,7 @@
 id=""
 pw=""
 ser="0" #2
-# ser 0 校内网 campus 1 移动 cmcc 2 联通 unicom 3 电信 telecom
+# ser 0 校内网 campus 1 移动 cmcc 2 联通 unicom 3 电信 telecom 仔细看
 if=""
 #
 #建议 添加进 crontab 定时任务
