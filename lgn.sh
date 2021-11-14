@@ -1,6 +1,11 @@
 #!/bin/ash
 # 参数 id     pw    4/6                        interface
 # 解释 用户名 密码 ipv4/ipv6用 4或6 不填默认4    网卡名 可不填
+# 下线用 参考使用 lgn.sh id password 
+# 下线用 参考使用 lgnout.sh id password 4
+# 下线用 参考使用 lgnout.sh id password 6 eth1
+# 下线用 参考使用 lgnout.sh id password eth1 4
+
 cd $(cd "$(dirname "$0")"; pwd)
 errorfile="lgn.log"
 fake_header="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36"
