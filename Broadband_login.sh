@@ -1,6 +1,8 @@
 #!/bin/ash
 # 参数     id     pw    ser            interface
 # 参数解释 用户名  密码  服务提供（数字） 网卡名（可选）
+# 寝室光猫上网认证 参考使用 Broadband_login.sh id pw ser
+# 寝室光猫上网认证 参考使用 Broadband_login.sh id pw ser interface
 # 首先 chmod +x 此脚本完整路径
 #赋予执行权
 # 带参数运行 此文件名.sh 账号 密码 运营商（0 校内网 campus 1 移动 cmcc 2 联通 unicom 3 电信 telecom） 
