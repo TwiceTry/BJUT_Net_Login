@@ -18,7 +18,7 @@ then
     id=$1
     pw=$2
 fi
-url1="10.21.250.3"
+url1="10.21.251.3"
 url2="10.21.221.98"
 url3="172.30.201.10"
 fake_header="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36"
