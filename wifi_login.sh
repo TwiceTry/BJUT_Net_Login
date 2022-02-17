@@ -32,8 +32,8 @@ then
     pw=$2
 fi
 
-# 认证地址
-serip=10.21.250.3
+# 认证地址 2022.2.16 IP地址 10.21.250.3 -> 10.21.251.3 域名可用 wlgn.bjut.edu.cn
+serip=10.21.251.3
 # 请求浏览器标
 ua="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36"
 # 获取状态
