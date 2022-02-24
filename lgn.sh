@@ -1,23 +1,24 @@
 #!/bin/ash
-# 参数 id     pw    4/6                        interface
-# 解释 用户名 密码 ipv4/ipv6用 4或6 不填默认4    网卡名 可不填
+# 参数 id     pw    4/6/46                     interface
+# 解释 用户名 密码 ipv4/ipv6/ipv4+ipv6用 4或6或46 不填默认4    网卡名 可不填
 #  参考使用 lgn.sh id password 
 # lgn认证用 参考使用 lgn.sh id password 4
 # lgn认证用 参考使用 lgn.sh id password 6 eth1
 # lgn认证用 参考使用 lgn.sh id password eth1 4
-
+# lgn认证用 参考使用 lgn.sh id password eth1 46
 cd $(cd "$(dirname "$0")"; pwd)
-errorfile="lgn.log"
+
 fake_header="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36"
+url46="http://lgn6.bjut.edu.cn/V6?https://lgn.bjut.edu.cn"
 url4="http://172.30.201.10" # http://lgn.bjut.edu.cn
-url6="http://[2001:da8:216:30c9::2]" # https://lgn6.bjut.edu.cn
+url6="http://[2001:da8:216:30c9::a]" # https://lgn6.bjut.edu.cn
 v46="4" # 参数 获取默认值 4： ipv4 6： ipv6
 all_if=` ifconfig | grep ^[a-z0-9] | awk -F: '{print $1}' `' '
 DDDDD=""  #id
 upass=""  #pw
 v46s='1'  #ipv4 或 ipv6 默认 1 ： ipv4 2： ipv6
 v6ip=''
-f4serip="172.30.201.10"
+f4serip="172.30.201.2"
 A0MKKey=''
 interface=''
 # 前两个参数 为 id pw
@@ -34,6 +35,7 @@ then
         "") pass=1 ;;
         "4") v46=4 ;;
         "6") v46=6 ;;
+        "46") v46=46 ;;
         *) result=` echo $all_if | grep "$para0 " `
         if [ "$result" != "" ]
         then 
@@ -46,6 +48,7 @@ then
         "") pass=1 ;;
         "4") v46=4 ;;
         "6") v46=6 ;;
+        "46") v46=46 ;;
         *) result=` echo $all_if | grep "$para0 " `
         if [ "$result" != "" ]
         then 
@@ -54,12 +57,17 @@ then
         ;;
     esac   
 fi
+errorfile="$DDDDD$v46$interface""lgn.log"
 url=` eval echo '$'url${v46} `
 if [ "$v46" == "4" ]
 then
     v46s='1'
-else
+elif [ "$v46" == "6" ]
+then
     v46s='2'
+elif [ "$v46" == "46" ]
+then
+    v46s='0'
 fi
 para="--data-urlencode DDDDD=$DDDDD --data-urlencode upass=${upass//'\r'/} --data-urlencode v46s=$v46s --data-urlencode v6ip=$v6ip --data-urlencode f4serip=$f4serip --data-urlencode 0MKKey=$A0MKKey"
 if [ "$interface" == '' ]
@@ -67,6 +75,22 @@ then
     body=`curl -o $errorfile -s -m 5 -A  "$fake_header" $para "$url" -g ` 
 else
     body=`curl -o $errorfile -s -m 5 -A  "$fake_header" $para  --interface "$interface" "$url" -g ` 
+fi
+if [ "$v46" == "46" ]
+then
+    url=$url4
+    v6ip=` cat $errorfile | grep -o -E "name='v6ip' value='[1234567890a-z:]+'" `
+    v6ip=` echo $v6ip | grep -o -E "value='[1234567890a-z:]+'" `
+    v6ip=` echo $v6ip | grep -o -E "'[1234567890a-z:]+'" `
+    v6ip=` echo $v6ip | grep -o -E "[1234567890a-z:]+" `
+    A0MKKey="Login"
+    para="--data-urlencode DDDDD=$DDDDD --data-urlencode upass=${upass//'\r'/} --data-urlencode 0MKKey=$A0MKKey --data-urlencode v6ip=$v6ip"
+    if [ "$interface" == '' ]
+    then
+        body=`curl -o $errorfile -s -m 5 -A  "$fake_header" $para "$url" -g ` 
+    else
+        body=`curl -o $errorfile -s -m 5 -A  "$fake_header" $para  --interface "$interface" "$url" -g ` 
+    fi
 fi
 Gno=` cat $errorfile | grep -o -E "Gno=[1234567890]+" `
 
