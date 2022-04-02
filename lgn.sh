@@ -95,7 +95,8 @@ fi
 Gno=` cat $errorfile | grep -o -E "Gno=[1234567890]+" `
 
 Gno=` echo ${Gno:4:2} `
-if [ "$Gno" == '01' ]
+flag=` cat $errorfile | grep -o -E "<!--Dr.COMWebLoginID_3.htm-->" `
+if [ "$flag" == "<!--Dr.COMWebLoginID_3.htm-->" ]
 then
     rm $errorfile
     echo 1
