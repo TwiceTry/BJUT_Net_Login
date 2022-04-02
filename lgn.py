@@ -513,29 +513,6 @@ class idpw(object):
         return cls.my_url
 
 
-    @classmethod
-    def passtest(cls,idpwdictlist,flag=0,minflow=0,maxflow=20,secs=0): # flow 单位GB
-        success_list = []
-        under_list=[]
-        for i in idpwdictlist:
-            time.sleep(secs)
-            auser = cls.__new__(cls)
-            auser.__init__(**i)
-            if auser.right:
-                success_list.append(dict(auser))
-                if flag and auser.active and (minflow*1024 <= float(auser.flow) <= maxflow*1024):
-                    under_list.append(dict(auser))
-            del auser
-        return success_list,under_list
-
-    @staticmethod
-    def underflow(idpwdictlist,maxflow):
-        index=len(idpwdictlist)/2
-        for i in range(len(idpwdictlist)):
-            if float(idpwdictlist[i]['flow']) < maxflow*1024:
-                index=i
-        return idpwdictlist[:i+1]
-
 t = threading.Thread(target=idpw.Which_Net)
 t.start()
 t.join()
