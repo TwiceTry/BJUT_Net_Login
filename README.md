@@ -20,6 +20,13 @@ Linux shell script for network of bjut including wifi,lgn,broadband.
 ## wifi_login.sh
 适合校园Wi-Fi: bjut_wifi使用  
 可以文件中填入关键信息，也可带参数运行
+## lgn.py
+idpw 类
+```
+from lgn import idpw
+user=idpw('username', 'password')
+user.login()
+```
 # 使用方法
 linux环境下，可以添加进开机启动，  
 也可以添加crontab 定时任务  
