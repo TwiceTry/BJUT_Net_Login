@@ -24,8 +24,9 @@ Linux shell script for network of bjut including wifi,lgn,broadband.
 idpw 类
 ```
 from lgn import idpw
-user=idpw('username', 'password')
-user.login()
+user=idpw('username', 'password') 
+user.login() 
+user.logout()
 ```
 # 使用方法
 linux环境下，可以添加进开机启动，  
