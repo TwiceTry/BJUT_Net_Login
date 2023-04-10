@@ -13,7 +13,9 @@ Linux shell script for network of BJUT including wifi,lgn,broadband.
 登录脚本为net_login_methods中脚本
 ## 更多玩法
 ### 指定网络接口（适合多网卡用户）
+```
 CaseLogin.sh username password interface
+```
 ### 维持登录 
 添加crontab 定时任务
 ```
