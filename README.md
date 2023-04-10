@@ -1,13 +1,16 @@
 # BJUT_Net_Login
 Linux shell script for network of BJUT including wifi,lgn,broadband.
 用于北京工业大学校园网认证的shell脚本 
-# 文件介绍
+# 介绍
 主要使用curl命令，如环境中无curl请自行安装，额外参数利用了curl指定网络接口功能   
 具体用法在文件中的注释写了一遍
 ## 简单使用
 克隆所有文件到运行目录 
 给CaseLogin.sh执行权限
 使用方式CaseLogin.sh username password
+### CaseLogin.sh文件
+此文件为自动识别网络环境并执行对应登录脚本
+登录脚本为net_login_methods中脚本
 ## 更多玩法
 ### 指定网络接口（适合多网卡用户）
 CaseLogin.sh username password interface
