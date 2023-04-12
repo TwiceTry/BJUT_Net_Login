@@ -142,6 +142,7 @@ lgn.sh)
     fi
     ;;
 *)
-    echo 网络错误
+    result="网络错误"
     ;;
 esac
+echo $result
