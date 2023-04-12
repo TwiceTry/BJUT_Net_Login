@@ -5,7 +5,7 @@
 # 依赖 curl
 # 依赖 AllIf.sh 相对脚本位置 ../tools/AllIf.sh
 # 依赖 TestUrl.sh 相对本脚本位置 ../tools/TestUrl.sh
-# 依赖 JSON.sh(来源于https://github.com/dominictarr/JSON.sh 相对本脚本位置 ../tools/JSON.sh ) egrep
+# 依赖 JSON.sh(来源于https://github.com/dominictarr/JSON.sh ） 相对本脚本位置 ../tools/JSON.sh 
 
 ### 寝室光猫上网认证 参考使用样例
 # Blgn.sh id pw
