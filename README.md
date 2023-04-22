@@ -10,7 +10,8 @@ Linux shell script for network of BJUT including wifi,lgn,broadband.
 克隆所有文件到运行目录 
 给CaseLogin.sh执行权限
 使用方式CaseLogin.sh username password
-### CaseLogin.sh文件
+### CaseLogin.sh文件 
+#### 2023-4-21 纯lgn.bjut.edu.cn网络访问不了Blgn服务 CaseLogin失效（待更新）
 此文件为自动识别网络环境并执行对应登录脚本
 登录脚本为net_login_methods中脚本
 ## 更多玩法
