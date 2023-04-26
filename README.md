@@ -21,7 +21,10 @@ Linux shell script for network of BJUT including wifi,lgn,broadband.
 ## 简单使用
 克隆所有文件到运行目录 
 赋予CaseLogin.sh执行权限
-使用方式CaseLogin.sh username password
+使用方式
+```
+CaseLogin.sh username password
+```
 
 ## 更新记录
  2023-04-26 更新网络环境判定方法 
