@@ -86,7 +86,7 @@ getServer() {
         else
             # 最后试试（lgn.bjut.edu.cn）
             lgnIsConnected=$(./net_login_methods/lgn.sh connected "$if")
-            if [ "$blgnIsConnected" = "1" ]; then
+            if [ "$lgnIsConnected" = "1" ]; then
                 # # 不是很优雅地去除字符串""或''包裹
                 # $(eval " echo $string ")
                 echo "lgn.sh"
