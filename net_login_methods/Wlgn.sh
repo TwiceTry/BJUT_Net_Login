@@ -26,7 +26,7 @@ pw=""
 if=""
 # 执行命令
 execName="login"
-extraExecName="isConnected status logout"
+extraExecName="connected ip status logout"
 
 # 1已登录则登出后登录 0已登录则不进行操作
 force="1"
@@ -80,7 +80,7 @@ getJson() {
 }
 
 # 获取网络状态
-getStatus() {
+getStatusJson() {
     # 获取状态url
     statusUrl="http://"$serHost"/drcom/chkstatus?callback=dr"$(date +%s)"123"
 
@@ -90,11 +90,34 @@ getStatus() {
     # 获取状态json
     json=$(getJson "$statusUrl" "$statusFile" $if)
 
+    echo $json
+}
+# 获取网络状态
+getIp() {
+    # 获取状态json
+    json=$(getStatusJson)
+
+    # 获取ip
+    ip=$(getValByKeyFromJson "$json" "ss5")
+
+    # 去除字符串""包裹
+    ip=$(echo ${ip#*\"})
+    ip=$(echo ${ip%*\"})
+
+    echo $ip
+}
+
+# 获取网络状态
+getStatus() {
+    # 获取状态json
+    json=$(getStatusJson)
+
     # 获取result
     result=$(getValByKeyFromJson "$json" "result")
 
     echo $result
 }
+
 
 # 登录过程 $1 默认0，1则返回之前的json，没有json则立即获取
 getLogin() {
@@ -141,8 +164,12 @@ getLogout() {
     echo $result
 }
 # 测试服务主机是否连通
-if [ "$execName" = "isConnected" ]; then
+if [ "$execName" = "connected" ]; then
     echo $(../tools/TestUrl.sh "$serHost")
+    exit 0
+# 获取当前校园网ip
+elif [ "$execName" = "ip" ]; then
+    echo $(getIp)
     exit 0
 # 获取当前网络状态
 elif [ "$execName" = "status" ]; then

@@ -31,7 +31,7 @@ pw=""
 if=""
 # 执行命令
 execName="login"
-extraExecName="server"
+extraExecName="server ip"
 ###
 
 ### 脚本参数判定获取
@@ -58,7 +58,6 @@ fi
 #记录网络环境
 loginScriptFile="loginScript.txt"
 
-touch $loginScriptFile
 # $1 json $2 key 获取json中key的值 依赖../tools/JSON.sh
 getValByKeyFromJson() {
     json="$1"
@@ -69,36 +68,36 @@ getValByKeyFromJson() {
     echo $val
 }
 
-# 判断网络环境 2022 网络环境复杂，依赖判定的先后顺序
+# 判断网络环境
+# 2023.4.21
+# 目前已知三种网络环境
 getServer() {
-    # 先试试是否在bjut_wifi
-    wlgnIsConnected=$(./net_login_methods/Wlgn.sh isConnected "$if")
+    # 先试试是否在bjut_wifi（wlgn.bjut.edu.cn）
+    wlgnIsConnected=$(./net_login_methods/Wlgn.sh connected "$if")
     if [ "$wlgnIsConnected" = "1" ]; then
         echo "Wlgn.sh"
     else
-        # 再试试10.21.221.98能不能连通（在bjut_wifi连不通）
-        blgnIsConnected=$(./net_login_methods/Blgn.sh isConnected "$if")
+        # 再试试寝室光猫网络（10.21.221.98）
+        blgnIsConnected=$(./net_login_methods/Blgn.sh connected "$if")
         if [ "$blgnIsConnected" = "1" ]; then
-            # 获取网络状态
-            status=$(./net_login_methods/Blgn.sh status "$if")
-            # 根据状态json解析出当前校园网ipv4地址
-            json=$(cat "./net_login_methods/"$if"status.json")
-            myv4Ip=$(getValByKeyFromJson "$json" "ss5")
-            # 不是很优雅地去除字符串""包裹
-            myv4Ip=$(eval " echo $myv4Ip ")
-            # 根据ip地址判断所在网络环境
-            first=${myv4Ip%%.*}
-            if [ $first = "172" ]; then
+            # # 不是很优雅地去除字符串""或''包裹
+            # $(eval " echo $string ")
+            echo "Blgn.sh"
+        else
+            # 最后试试（lgn.bjut.edu.cn）
+            lgnIsConnected=$(./net_login_methods/lgn.sh connected "$if")
+            if [ "$blgnIsConnected" = "1" ]; then
+                # # 不是很优雅地去除字符串""或''包裹
+                # $(eval " echo $string ")
                 echo "lgn.sh"
-            elif [ $first = "10" ]; then
-                echo "Blgn.sh"
             else
-                echo ""
+                echo "error"
             fi
         fi
     fi
 }
 
+touch $loginScriptFile
 loginScript=$(cat $loginScriptFile)
 # 如果记录文件loginScript为空或recover为1或是server命令则获取网络环境并记录进loginScript
 if [[ "$recover" = "1" || -z "$loginScript" || "$execName" = "server" ]]; then
@@ -106,24 +105,28 @@ if [[ "$recover" = "1" || -z "$loginScript" || "$execName" = "server" ]]; then
     echo $loginScript >$loginScriptFile
     if [ "$execName" = "server" ]; then exit 0; fi
 fi
-
+# ip
+if [ "$execName" = "ip" ]; then
+    echo $(./net_login_methods/$loginScript ip "$if")
+    exit 0
+fi
 # 根据网络环境记录文件loginScript进行登录操作
 case $loginScript in
 Wlgn.sh)
     # 登录bjut_wifi
     result=$(./net_login_methods/Wlgn.sh "$id" "$pw" "$if")
     # 判断ipv6是否可用，是则再登录ipv6
-    if [["$result" = "1" && "$(./net_login_methods/lgn.sh isConnected 6 "$if")" = "1" ]]; then
+    if [["$result" = "1" && "$(./net_login_methods/lgn.sh connected 6 "$if")" = "1" ]]; then
         result=$(./net_login_methods/lgn.sh "$id" "$pw" 6 "$if")
     fi
     ;;
 Blgn.sh)
     # 登录光猫网络认证
     result=$(./net_login_methods/Blgn.sh "$id" "$pw" "$if")
-    
+
     if [ "$result" = "1" ]; then
         # 判断ipv6是否可用
-        ipv6=$(./net_login_methods/lgn.sh isConnected 6 "$if")
+        ipv6=$(./net_login_methods/lgn.sh connected 6 "$if")
         # 此方式还需再次登录lgn.bjut.edu.cn，根据ipv6是否可用进行ipv4或一起登录操作
         if [ "$ipv6" = "1" ]; then
             result=$(./net_login_methods/lgn.sh "$id" "$pw" 46 "$if")
@@ -133,7 +136,7 @@ Blgn.sh)
     fi
     ;;
 lgn.sh)
-    ipv6=$(./net_login_methods/lgn.sh isConnected 6 "$if")
+    ipv6=$(./net_login_methods/lgn.sh connected 6 "$if")
     # 根据ipv6是否可用进行ipv4或一起登录操作
     if [ "$ipv6" = "1" ]; then
         result=$(./net_login_methods/lgn.sh "$id" "$pw" 46 "$if")
@@ -142,7 +145,7 @@ lgn.sh)
     fi
     ;;
 *)
-    result="网络错误"
+    echo 网络错误
     ;;
 esac
 echo $result

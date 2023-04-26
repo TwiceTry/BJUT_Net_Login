@@ -5,7 +5,7 @@
 # 依赖 curl
 # 依赖 AllIf.sh 相对脚本位置 ../tools/AllIf.sh
 # 依赖 TestUrl.sh 相对本脚本位置 ../tools/TestUrl.sh
-# 依赖 JSON.sh(来源于https://github.com/dominictarr/JSON.sh ） 相对本脚本位置 ../tools/JSON.sh 
+# 依赖 JSON.sh(来源于https://github.com/dominictarr/JSON.sh 相对本脚本位置 ../tools/JSON.sh ) egrep
 
 ### 寝室光猫上网认证 参考使用样例
 # Blgn.sh id pw
@@ -30,7 +30,7 @@ ser="0"
 if=""
 # 执行命令
 execName="login"
-extraExecName="isConnected status logout"
+extraExecName="connected ip status logout"
 
 # 1已登录则登出后登录 0已登录则不进行操作
 force="0"
@@ -114,9 +114,8 @@ getValByKeyFromJson() {
 
     echo $val
 }
-
-# 获取网络状态
-getStatus() {
+# 获取网络状态json 并存于statusFile
+getStatusJson() {
     # 获取状态url
     statusUrl="http://"$serHost"/drcom/chkstatus?callback=dr"$(date +%s)"123"
 
@@ -125,6 +124,27 @@ getStatus() {
 
     # 获取状态json
     json=$(getJson "$statusUrl" "$statusFile" $if)
+
+    echo $json
+}
+# 获取网络状态
+getIp() {
+    # 获取状态json
+    json=$(getStatusJson)
+
+    # 获取ip
+    ip=$(getValByKeyFromJson "$json" "ss5")
+
+    # 去除字符串""包裹
+    ip=$(echo ${ip#*\"})
+    ip=$(echo ${ip%*\"})
+
+    echo $ip
+}
+# 获取网络状态
+getStatus() {
+    # 获取状态json
+    json=$(getStatusJson)
 
     # 获取result
     result=$(getValByKeyFromJson "$json" "result")
@@ -185,8 +205,12 @@ getLogout() {
     echo $result
 }
 # 测试链接是否连通
-if [ "$execName" = "isConnected" ]; then
+if [ "$execName" = "connected" ]; then
     echo $(../tools/TestUrl.sh "$serHost")
+    exit 0
+# 获取当前校园网ip
+elif [ "$execName" = "ip" ]; then
+    echo $(getIp)
     exit 0
 # 获取当前网络状态
 elif [ "$execName" = "status" ]; then

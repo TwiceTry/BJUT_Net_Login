@@ -29,7 +29,7 @@ ipv46="4"
 if=""
 # 执行命令
 execName="login"
-extraExecName="isConnected status logout"
+extraExecName="connected ip status logout"
 # 1已登录则登出后登录 0已登录则不进行操作
 force="1"
 ###
@@ -37,7 +37,7 @@ force="1"
 ### 脚本参数判定获取
 if [ -z "$1" ]; then
     execName="login"
-elif [ -n "$(echo $extraExecName | grep -w $1 )" ]; then
+elif [ -n "$(echo $extraExecName | grep -w $1)" ]; then
     execName="$1"
     tmp=$2
     case $tmp in
@@ -76,9 +76,11 @@ postSub() {
     else
         body=$(curl -o $errorFile -s -m 5 -A "$ua" $para --interface "$if" "$url" -g)
     fi
+    echo $(cat $errorFile)
 }
+
 # $1 4/6 (ipv4/ipv6)
-getStatus() {
+getStatusHtml() {
     # 按 ipv4/ipv6 设置url
     case "$1" in
     [46] | 46) ipv46="$1" ;;
@@ -88,20 +90,48 @@ getStatus() {
     errorFile="$interface""status"$ipv46".html"
     para="-X GET"
     # 传para参为get方法
-    res=$(postSub "$url" "$para" "$errorFile")
+    html=$(postSub "$url" "$para" "$errorFile")
+
+    echo $html
+}
+
+# $1 4/6 (ipv4/ipv6)
+getIp() {
+
+    html=$(getStatusHtml "$1")
+    flag=$(echo $html | grep -o -E "<!--Dr.COMWebLoginID_1.htm-->")
+    if [ "$flag" = "<!--Dr.COMWebLoginID_1.htm-->" ]; then
+        valName="v"$1"ip"
+    else
+        valName="v46ip"
+    fi
+    # 返回的html <script>中v4ip/v6ip
+    if [ "$1" = "4" ]; then
+        # 正则查询ipv4
+        flag=$(echo $html | egrep -m 1 -o $valName"='[0-9]{1,3}(\.[0-9]{1,3}){3}'" | head -1 | awk -F "'" '{print $2}')
+    elif [ "$1" = "6" ]; then
+        # 正则查询ipv6
+        flag=$(echo $html | egrep -o $valName"='[0-9a-fA-F]{0,4}(\:[0-9a-fA-F]{0,4})*'" | head -1 | awk -F "'" '{print $2}')
+    fi
+    echo $flag
+}
+
+# $1 4/6 (ipv4/ipv6)
+getStatus() {
+
+    html=$(getStatusHtml "$1")
 
     # 返回的html中的注释标签判断是否已登录
-    flag=$(cat $errorFile | grep -o -E "<!--Dr.COMWebLoginID_1.htm-->")
+    flag=$(echo $html | grep -o -E "<!--Dr.COMWebLoginID_1.htm-->")
     if [ "$flag" = "<!--Dr.COMWebLoginID_1.htm-->" ]; then
         #rm $errorFile
         echo 1
     else
         echo 0
     fi
-    echo $res
 }
 
-# $1 id ; $2 pw ; $3 ipv46 
+# $1 id ; $2 pw ; $3 ipv46
 postLogin() {
     # 按post 参数设置变量
     DDDDD="$1"
@@ -120,22 +150,23 @@ postLogin() {
     url=$(eval echo '$'url$3)
 
     # 请求错误地返回结果保存地址
-    errorFile="$interface""login"$ipv46".html"
+    errorFile="$interface""login"$3".html"
 
     # 设置post参数字符串 urlencode
     para="--data-urlencode DDDDD=$DDDDD --data-urlencode upass=$upass --data-urlencode v46s=$v46s --data-urlencode v6ip=$v6ip --data-urlencode f4serip=$f4serip --data-urlencode 0MKKey=$A0MKKey"
 
     # post 请求
-    $(postSub "$url" "$para" "$errorFile")
+    html=$(postSub "$url" "$para" "$errorFile")
 
     # ipv4与ipv6一同认证 多一步
     if [ "$v46s" = "0" ]; then
         url=$url4
-        v6ip=$(cat $errorFile | grep -o -E "name='v6ip' value='[1234567890a-z:]+'" | grep -o -E "value='[1234567890a-z:]+'" | grep -o -E "'[1234567890a-z:]+'" | grep -o -E "[1234567890a-z:]+")
+        # 正则查询ipv6 下一步作参数
+        v6ip=$(echo $html | grep -o -E "value='[0-9a-fA-F]{0,4}(\:[0-9a-fA-F]{0,4})*'" | head -1 | awk -F "'" '{print $2}')
         A0MKKey="Login"
         para="--data-urlencode DDDDD=$DDDDD --data-urlencode upass=$upass --data-urlencode 0MKKey=$A0MKKey --data-urlencode v6ip=$v6ip"
         # post 请求
-        $(postSub "$url" "$para" "$errorFile")
+        html=$(postSub "$url" "$para" "$errorFile")
     fi
 
     # 最后判断是否成功 此登录无需登出可覆盖登录
@@ -144,7 +175,7 @@ postLogin() {
     # Gno=$(echo ${Gno:4:2})
 
     # 返回的html中的注释标签判断是否成功
-    flag=$(cat $errorFile | grep -o -E "<!--Dr.COMWebLoginID_3.htm-->")
+    flag=$(echo $html | grep -o -E "<!--Dr.COMWebLoginID_3.htm-->")
     if [ -n $flag ]; then
         #rm $errorFile
         echo 1
@@ -164,26 +195,27 @@ getLogout() {
     errorFile="$interface""logout"$ipv46".html"
     para="-X GET"
     # 传para参为get方法
-    res=$(postSub "$url" "$para" "$errorFile")
+    html=$(postSub "$url" "$para" "$errorFile")
 
     # 返回的html中的注释标签判断是否成功
-    flag=$(cat $errorFile | grep -o -E "<!--Dr.COMWebLoginID_2.htm-->")
+    flag=$(echo $html | grep -o -E "<!--Dr.COMWebLoginID_2.htm-->")
     if [ "$flag" = "<!--Dr.COMWebLoginID_2.htm-->" ]; then
         #rm $errorFile
         echo 1
     else
         echo 0
     fi
-    echo $res
 }
 
 # 测试链接是否连通
-if [ "$execName" = "isConnected" ]; then
+if [ "$execName" = "connected" ]; then
     url=$(eval echo '$'url$ipv46)
     echo $(../tools/TestUrl.sh "$url")
     exit 0
+elif [ "$execName" = "ip" ]; then
+    echo $(getIp "$ipv46")
+    exit 0
 fi
-
 # 获取当前网络状态
 if [ "$execName" = "status" ]; then
     echo $(getStatus "$ipv46")
