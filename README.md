@@ -4,12 +4,12 @@ Linux shell script for network of BJUT including wifi,lgn,broadband.
 
 ***
 
-北工大校园网认证服务同时运行多种网络环境，目前已知有bjut_wifi，寝室光满wifi，传统网线接口三种
+北工大校园网认证服务同时运行多种网络环境，目前已知有bjut_wifi，寝室光猫wifi，传统网线接口三种
 
 |网络环境|初次认证页面|二次认证页面|
 |-|-|-|
 |bjut_wifi|wlgn.bjut.edu.cn|无|
-|寝室光满wifi|10.21.221.98|lgn.bjut.edu.cn|
+|寝室光猫wifi|10.21.221.98|lgn.bjut.edu.cn|
 |传统网络接口|lgn.bjut.edu.cn|无|
 
 三种网络环境认证后均可访问lgn.bjut.edu.cn，导致难以识别
@@ -49,7 +49,7 @@ net_login_methods文件夹中有各个页面的登录脚本
 |网络环境|初次认证页面|认证脚本名|
 |-|-|-|
 |bjut_wifi|wlgn.bjut.edu.cn|Wlgn.sh|
-|寝室光满wifi|10.21.221.98|Blgn.sh|
+|寝室光猫wifi|10.21.221.98|Blgn.sh|
 |传统网络接口|lgn.bjut.edu.cn|lgn.sh|
 ## 其他
 json字符串解析使用到：
